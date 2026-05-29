@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Alta de Propietarios - VeteCare</title>
+</head>
+<body>
+
+<header>
+    <img width="180" src="vetecare_logo.png" alt="Logo VeteCare">
+    <h1>Alta de Propietarios - Consultorio VeteCare</h1>
+    <p>Rellene los datos para registrar al tutor o dueño de la mascota en la base de datos MongoDB.</p>
+</header> 
+
+<main>
+    <div class="form-container">
+        <form action="#" method="POST">
+            <div class="form-group">
+                <label>ID Tutor / Propietario:</label>
+                <input type="number" name="id_tutor" placeholder="Ej: 5000" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Nombre Completo:</label>
+                <input type="text" name="nombre_propietario" placeholder="Ej: Juan Manuel Villa" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Domicilio:</label>
+                <input type="text" name="domicilio" placeholder="Ej: Calle Roma, 1083" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Contacto (Teléfono o Correo):</label>
+                <input type="text" name="contacto" placeholder="Ej: 656-490-2002 o juan@correo.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Nombre del Paciente (Mascota):</label>
+                <input type="text" name="paciente_asociado" placeholder="Ej: Bella" required>
+            </div>
+
+            <button type="submit" class="btn-submit">Registrar Propietario</button>
+        </form>
+    </div>
+
+    <a href="index.html" class="btn-back">&lt;&lt; Volver al Menú Principal</a>
+</main>
+
+<footer>
+    <p><strong>ESTUDIANTE:</strong> CALEB DANIEL RODARTE GONZALEZ | <strong>NO. CONTROL:</strong> 24308051281083</p>
+    <p>4TO SEMESTRE - GRUPO I | ESPECIALIDAD: PROGRAMACIÓN</p>
+</footer>
+
+</body>
+<style>
+    * { box-sizing: border-box; }
+    body {
+        font-family: "Poppins", sans-serif;
+        background-color: #FDEBD0;
+        margin: 0; padding: 0;
+        display: flex; flex-direction: column; align-items: center; min-height: 100vh; color: #2C3E50;
+    }
+    header {
+        background-color: #FFFFFF; width: 100%; padding: 25px 0; text-align: center; border-bottom: 3px solid #B0B0B0;
+    }
+    h1 { color: #444444; margin: 15px 0 5px 0; font-size: 1.8rem; font-style: italic; }
+    header p { margin: 5px 0 0 0; font-size: 14px; color: #666666; }
+    main { display: flex; flex-direction: column; align-items: center; width: 100%; padding: 40px 20px; flex: 1; }
+    .form-container { max-width: 500px; width: 100%; background: white; padding: 35px; border-radius: 4px; border: 3px solid #B0B0B0; }
+    .form-group { margin-bottom: 22px; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; color: #E67E22; font-size: 14px; }
+    input[type="text"], input[type="number"] {
+        width: 100%; padding: 12px; border: 2px solid #B0B0B0; border-radius: 4px; font-family: "Poppins", sans-serif; font-size: 14px; background-color: #FAFAFA; color: #333;
+    }
+    input:focus { outline: none; border-color: #E67E22; background-color: #fff; box-shadow: 0 0 5px rgba(230, 126, 34, 0.3); }
+    .btn-submit {
+        background-color: #E67E22; color: white; border: none; padding: 14px 15px; width: 100%; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: "Poppins", sans-serif; margin-top: 10px;
+    }
+    .btn-submit:hover { background-color: #D35400; }
+    .btn-back {
+        display: inline-block; text-align: center; margin-top: 25px; color: #000000; background-color: #00FF00; font-weight: bold; padding: 10px 25px; border: 3px solid #000000; text-decoration: none; font-size: 14px;
+    }
+    .btn-back:hover { background-color: #00CC00; }
+    footer { width: 100%; background-color: #FFFFFF; padding: 15px 0; text-align: center; font-size: 12px; color: #333333; border-top: 3px solid #B0B0B0; }
+    footer p { margin: 4px 0; }
+</style>
+</html>

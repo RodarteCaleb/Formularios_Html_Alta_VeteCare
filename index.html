@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SISTEMA INSTITUCIONAL VETECARE</title>
+    <style>
+        body { 
+            background-color: #FFF2E6; 
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333333;
+        }
+        header {
+            border: 3px solid #B0B0B0;
+            padding: 20px;
+            background-color: #FFFFFF;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 20px;
+            margin: 10px 0 0 0;
+            color: #444444;
+            font-style: italic;
+        }
+        .contenedor-layout {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+        .columna-izquierda {
+            display: table-cell;
+            width: 200px;
+            vertical-align: top;
+            padding-right: 20px;
+        }
+        .columna-derecha {
+            display: table-cell;
+            vertical-align: top;
+            border: 3px solid #B0B0B0;
+            padding: 25px;
+            background-color: #FFFFFF;
+        }
+        nav {
+            border: 3px solid #B0B0B0;
+            padding: 15px;
+            background-color: #FFFFFF;
+        }
+        .btn-menu {
+            display: block;
+            text-decoration: none;
+            color: #333333;
+            background-color: #FFF2E6;
+            font-weight: bold;
+            padding: 10px;
+            border: 1px solid #CCCCCC;
+            margin-bottom: 8px;
+            font-size: 13px;
+            text-align: center;
+        }
+        .btn-menu:hover {
+            background-color: #FFE4CC;
+        }
+        h2 {
+            font-size: 18px;
+            margin-top: 0;
+            color: #E67E22;
+        }
+        p {
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        .contenedor-imagen-cuerpo {
+            text-align: center;
+            margin-top: 25px;
+        }
+        .imagen-cuerpo {
+            border: 2px solid #B0B0B0;
+            max-width: 100%;
+            height: auto;
+        }
+        footer {
+            border: 3px solid #B0B0B0;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #FFFFFF;
+            font-size: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="vetecare_logo.png" alt="Logotipo VeteCare" width="180">
+    <h1>SISTEMA DE GESTIÓN VETERINARIA VETECARE</h1>
+</header>
+
+<div class="contenedor-layout">
+    
+    <div class="columna-izquierda">
+        <nav>
+            <a href="index.html" class="btn-menu">INICIO</a>
+            <a href="pacientes.html" class="btn-menu">PACIENTES</a>
+            <a href="propietarios.html" class="btn-menu">PROPIETARIOS</a>
+            <a href="alta_historial.html" class="btn-menu">HISTORIAL</a>
+            <a href="alta_consultas.html" class="btn-menu">CONSULTAS</a>
+            <a href="alta_administracion.html" class="btn-menu">ADMINISTRACIÓN</a>
+            <a href="contacto.html" class="btn-menu">CONTACTO</a>
+        </nav>
+    </div>
+
+    <div class="columna-derecha">
+        <h2>PRESENTACIÓN INSTITUCIONAL</h2>
+        <p>Bienvenido al Sistema de Gestión de VeteCare. Este portal funciona como la interfaz de acceso principal y consulta de las bases de datos estructuradas en el motor NoSQL MongoDB.</p>
+        <p>A través de la barra de navegación lateral, puede acceder de forma independiente a cada uno de los módulos de registro clínico, control de propietarios y auditoría administrativa del centro veterinario.</p>
+        <p>Por favor, seleccione cualquiera de las opciones de la izquierda para abrir el archivo de datos correspondiente.</p>
+        
+        <div class="contenedor-imagen-cuerpo">
+            <img src="VeteCare_Molly.png" alt="Presentación VeteCare" class="imagen-cuerpo" width="450">
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    <p><strong>ESTUDIANTE:</strong> CALEB DANIEL RODARTE GONZALEZ | <strong>NO. CONTROL:</strong> 24308051281083</p>
+    <p>4TO SEMESTRE - GRUPO I | ESPECIALIDAD: PROGRAMACIÓN</p>
+    <p>PROYECTO: P2-Mi Negocio-WEB</p>
+</footer>
+
+</body>
+</html>
