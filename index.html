@@ -80,13 +80,55 @@
             max-width: 100%;
             height: auto;
         }
+        
+        /* === MODIFICACIÓN DEL FOOTER CON TEXTO CENTRADO Y LOGO A LA DERECHA === */
         footer {
             border: 3px solid #B0B0B0;
             margin-top: 20px;
             padding: 15px;
             background-color: #FFFFFF;
-            font-size: 12px;
-            text-align: center;
+            position: relative; /* Permite posicionar el logo internamente */
+            text-align: center; /* Centra el texto exactamente igual que antes */
+        }
+        
+        .footer-info {
+            font-size: 11px; /* Un poco más pequeño y sutil */
+            color: #555555;
+            line-height: 1.4;
+            display: inline-block; /* Mantiene el bloque de texto centrado */
+        }
+
+        .footer-info p {
+            margin: 4px 0;
+            font-size: 11px; /* Aplica el tamaño pequeño a los párrafos */
+        }
+
+        .footer-logo-container {
+            position: absolute;
+            right: 20px; /* Lo empuja a la esquina derecha */
+            top: 50%;
+            transform: translateY(-50%); /* Lo centra verticalmente en el footer */
+        }
+
+        .footer-logo {
+            max-height: 45px; /* Tamaño discreto para el logo */
+            width: auto;
+            display: block;
+        }
+
+        /* Ajuste para pantallas pequeñas si es necesario */
+        @media (max-width: 768px) {
+            footer {
+                position: static;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            .footer-logo-container {
+                position: static;
+                transform: none;
+            }
         }
     </style>
 </head>
@@ -107,15 +149,22 @@
             <a href="alta_historial.html" class="btn-menu">HISTORIAL</a>
             <a href="alta_consultas.html" class="btn-menu">CONSULTAS</a>
             <a href="alta_administracion.html" class="btn-menu">ADMINISTRACIÓN</a>
-            <a href="contacto.html" class="btn-menu">CONTACTO</a>
         </nav>
     </div>
 
     <div class="columna-derecha">
-        <h2>PRESENTACIÓN INSTITUCIONAL</h2>
-        <p>Bienvenido al Sistema de Gestión de VeteCare. Este portal funciona como la interfaz de acceso principal y consulta de las bases de datos estructuradas en el motor NoSQL MongoDB.</p>
-        <p>A través de la barra de navegación lateral, puede acceder de forma independiente a cada uno de los módulos de registro clínico, control de propietarios y auditoría administrativa del centro veterinario.</p>
-        <p>Por favor, seleccione cualquiera de las opciones de la izquierda para abrir el archivo de datos correspondiente.</p>
+        <h2>BIENVENIDO A VETECARE</h2>
+        <p>En <strong>VeteCare</strong> nos dedicamos con amor y profesionalismo al cuidado integral de tus mascotas. Somos un equipo comprometido con la salud y el bienestar de tus compañeros de vida, ofreciendo atención médica de alta calidad, calidez humana y la mejor tecnología para que estén siempre fuertes y sanos.</p>
+        
+        <h3>Nuestros Servicios Principales</h3>
+        <p>• <strong>Consulta Médica General:</strong> Revisión completa de signos vitales, diagnósticos y tratamientos personalizados.</p>
+        <p>• <strong>Vacunación y Desparasitación:</strong> Control estricto de cartillas médicas para mantener a tus mascotas protegidas.</p>
+        <p>• <strong>Cirugía y Quirófano:</strong> Procedimientos quirúrgicos seguros (como esterilizaciones) con monitoreo profesional.</p>
+        <p>• <strong>Estética y Peluquería:</strong> Baños medicados, corte de pelo según la raza, corte de uñas y consentimiento integral.</p>
+        
+        <h3>Horarios de Atención</h3>
+        <p>Lunes a Viernes: 8:00 AM a 7:00 PM | Sábados: 9:00 AM a 2:00 PM</p>
+        <p><em>* Contamos con atención de urgencias médicas disponible las 24 horas del día.</em></p>
         
         <div class="contenedor-imagen-cuerpo">
             <img src="VeteCare_Molly.png" alt="Presentación VeteCare" class="imagen-cuerpo" width="450">
@@ -125,9 +174,14 @@
 </div>
 
 <footer>
-    <p><strong>ESTUDIANTE:</strong> CALEB DANIEL RODARTE GONZALEZ | <strong>NO. CONTROL:</strong> 24308051281083</p>
-    <p>4TO SEMESTRE - GRUPO I | ESPECIALIDAD: PROGRAMACIÓN</p>
-    <p>PROYECTO: P2-Mi Negocio-WEB</p>
+    <div class="footer-info">
+        <p><strong>ESTUDIANTE:</strong> CALEB DANIEL RODARTE GONZALEZ | <strong>NO. CONTROL:</strong> 24308051281083</p>
+        <p>4TO SEMESTRE - GRUPO I | <strong>ESPECIALIDAD:</strong> PROGRAMACIÓN</p>
+        <p><strong>PROYECTO:</strong> P2-Mi Negocio-WEB</p>
+    </div>
+    <div class="footer-logo-container">
+        <img src="vetecare_logo.png" alt="VeteCare Logo Inferior" class="footer-logo">
+    </div>
 </footer>
 
 </body>
