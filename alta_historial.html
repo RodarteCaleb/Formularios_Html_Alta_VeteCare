@@ -4,82 +4,323 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <title>Añadir a Historial - VeteCare</title>
+    <title>Historial Clínico - VeteCare</title>
+    <style>
+* { box-sizing:border-box; }
+body { font-family:"Poppins",sans-serif; background:#FDEBD0; margin:0; padding:0; display:flex; flex-direction:column; align-items:center; min-height:100vh; color:#2C3E50; }
+header { background:#fff; width:100%; padding:25px 0; text-align:center; border-bottom:3px solid #B0B0B0; }
+h1 { color:#444; margin:15px 0 5px; font-size:1.8rem; font-style:italic; }
+header p { margin:5px 0 0; font-size:14px; color:#666; }
+main { display:flex; flex-direction:column; align-items:center; width:100%; padding:40px 20px; flex:1; }
+.form-container { max-width:500px; width:100%; background:#fff; padding:35px; border-radius:4px; border:3px solid #B0B0B0; }
+.form-group { margin-bottom:22px; }
+label { display:block; margin-bottom:8px; font-weight:600; color:#E67E22; font-size:14px; }
+input[type="text"] { width:100%; padding:12px; border:2px solid #B0B0B0; border-radius:4px; font-family:"Poppins",sans-serif; font-size:14px; background:#FAFAFA; color:#333; }
+input:focus { outline:none; border-color:#E67E22; background:#fff; box-shadow:0 0 5px rgba(230,126,34,.3); }
+.btn-submit { background:#E67E22; color:#fff; border:none; padding:14px; width:100%; border-radius:4px; font-size:16px; font-weight:bold; cursor:pointer; font-family:"Poppins",sans-serif; margin-top:10px; }
+.btn-submit:hover { background:#D35400; }
+.btn-submit:disabled { background:#ccc; cursor:not-allowed; }
+.btn-back { display:inline-block; text-align:center; margin-top:25px; color:#000; background:#fa3e3e; font-weight:bold; padding:10px 25px; border:3px solid #000; text-decoration:none; font-size:14px; }
+.btn-back:hover { background:#ff0000; }
+footer { width:100%; background:#fff; padding:15px 0; text-align:center; font-size:12px; color:#333; border-top:3px solid #B0B0B0; }
+footer p { margin:4px 0; }
+    </style>
 </head>
 <body>
-
 <header>
     <img width="180" src="vetecare_logo.png" alt="Logo VeteCare">
     <h1>Nuevo Registro de Historial Clínico</h1>
-    <p>Ingrese los detalles del tratamiento y observaciones del paciente para el archivo clínico.</p>
-</header> 
-
+    <p>Ingrese los detalles del tratamiento y observaciones del paciente.</p>
+</header>
 <main>
     <div class="form-container">
-        <form action="#" method="POST">
+        <form id="form-principal">
             <div class="form-group">
                 <label>Folio del Historial:</label>
                 <input type="text" name="folio" placeholder="Ej: 0G38-ACT" required>
             </div>
-            
             <div class="form-group">
                 <label>Fecha del Evento:</label>
                 <input type="text" name="fecha" placeholder="Ej: 4/01/21" required>
             </div>
-            
             <div class="form-group">
                 <label>Tratamiento Aplicado:</label>
                 <input type="text" name="tratamiento" placeholder="Ej: Vacuna / Cirugía" required>
             </div>
-            
             <div class="form-group">
                 <label>Observaciones Clínicas:</label>
-                <input type="text" name="observaciones" placeholder="Ej: Inmunización básica / Esterilización" required>
+                <input type="text" name="observaciones" placeholder="Ej: Inmunización básica" required>
             </div>
-
             <button type="submit" class="btn-submit">Añadir al Historial</button>
         </form>
     </div>
-
     <a href="index.html" class="btn-back">&lt;&lt; Volver al Menú Principal</a>
 </main>
-
 <footer>
     <p><strong>ESTUDIANTE:</strong> CALEB DANIEL RODARTE GONZALEZ | <strong>NO. CONTROL:</strong> 24308051281083</p>
     <p>4TO SEMESTRE - GRUPO I | ESPECIALIDAD: PROGRAMACIÓN</p>
 </footer>
+<script>
+const VC_CONFIG = {
+    endpoint: '/api/historial',
+    formId: 'form-principal',
+    campos: ['folio','fecha','tratamiento','observaciones'],
+    columnas: ['Folio','Fecha','Tratamiento','Observaciones'],
+    titulo: '📋 Historial Clínico'
+};
+</script>
+<script>
+// ============================================================
+// VETECARE CLIENT JS — lógica compartida embebida en cada HTML
+// ============================================================
 
+const ADMIN_PASSWORD = 'vetecare2024';
+const API_BASE = 'http://localhost:5000';
+
+// ── Toast ─────────────────────────────────────────────────────
+function mostrarToast(msg, tipo = 'ok') {
+    let t = document.getElementById('vc-toast');
+    if (!t) { t = document.createElement('div'); t.id = 'vc-toast'; document.body.appendChild(t); }
+    t.textContent = msg;
+    t.className = 'vc-toast ' + (tipo === 'error' ? 'vc-error' : 'vc-ok') + ' show';
+    clearTimeout(t._t);
+    t._t = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ── Modal contraseña ──────────────────────────────────────────
+function pedirPassword(accion) {
+    return new Promise(resolve => {
+        let ov = document.getElementById('vc-pw-overlay');
+        if (!ov) {
+            ov = document.createElement('div');
+            ov.id = 'vc-pw-overlay';
+            ov.innerHTML = `<div class="vc-pw-box">
+              <h3>🔐 Contraseña de Admin</h3>
+              <p id="vc-pw-label"></p>
+              <input id="vc-pw-input" type="password" placeholder="Contraseña...">
+              <p id="vc-pw-err" style="color:#c0392b;font-size:12px;min-height:16px;margin:4px 0"></p>
+              <div style="display:flex;gap:10px;margin-top:8px">
+                <button id="vc-pw-ok">Confirmar</button>
+                <button id="vc-pw-cancel">Cancelar</button>
+              </div>
+            </div>`;
+            document.body.appendChild(ov);
+        }
+        const inp = document.getElementById('vc-pw-input');
+        const err = document.getElementById('vc-pw-err');
+        document.getElementById('vc-pw-label').textContent = 'Acción: ' + accion;
+        inp.value = ''; err.textContent = '';
+        ov.style.display = 'flex';
+        setTimeout(() => inp.focus(), 50);
+
+        function limpiar() {
+            ov.style.display = 'none';
+            document.getElementById('vc-pw-ok').onclick = null;
+            document.getElementById('vc-pw-cancel').onclick = null;
+            inp.onkeydown = null;
+        }
+        function confirmar() {
+            if (inp.value === ADMIN_PASSWORD) { limpiar(); resolve(true); }
+            else { err.textContent = '❌ Contraseña incorrecta'; inp.value = ''; inp.focus(); }
+        }
+        document.getElementById('vc-pw-ok').onclick = confirmar;
+        document.getElementById('vc-pw-cancel').onclick = () => { limpiar(); resolve(false); };
+        inp.onkeydown = e => { if (e.key === 'Enter') confirmar(); };
+    });
+}
+
+// ── Modal edición ─────────────────────────────────────────────
+function abrirEdicion(doc, campos, endpoint, onDone) {
+    let ov = document.getElementById('vc-edit-overlay');
+    if (!ov) { ov = document.createElement('div'); ov.id = 'vc-edit-overlay'; document.body.appendChild(ov); }
+    ov.innerHTML = `<div class="vc-edit-box">
+      <h3>✏️ Editar Registro</h3>
+      ${campos.map(c => `<label>${c.replace(/_/g,' ').toUpperCase()}</label>
+        <input type="text" name="${c}" value="${doc[c] ?? ''}">`).join('')}
+      <div style="display:flex;gap:10px;margin-top:14px">
+        <button id="vc-edit-save">💾 Guardar</button>
+        <button id="vc-edit-cancel">Cancelar</button>
+      </div>
+    </div>`;
+    ov.style.display = 'flex';
+
+    document.getElementById('vc-edit-cancel').onclick = () => ov.style.display = 'none';
+    document.getElementById('vc-edit-save').onclick = async () => {
+        const datos = {};
+        ov.querySelectorAll('input').forEach(i => datos[i.name] = i.value);
+        const r = await fetch(`${API_BASE}${endpoint}/${doc._id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
+        });
+        const json = await r.json();
+        if (json.error) { mostrarToast('❌ ' + json.error, 'error'); return; }
+        mostrarToast('✅ Registro actualizado');
+        ov.style.display = 'none';
+        onDone();
+    };
+}
+
+// ── Tabla ─────────────────────────────────────────────────────
+function renderTabla(docs, campos, columnas, endpoint, onRefresh) {
+    let sec = document.getElementById('vc-tabla-sec');
+    if (!sec) {
+        sec = document.createElement('section');
+        sec.id = 'vc-tabla-sec';
+        const btnBack = document.querySelector('.btn-back');
+        const main = document.querySelector('main');
+        if (btnBack) main.insertBefore(sec, btnBack); else main.appendChild(sec);
+    }
+
+    const filas = docs.length === 0
+        ? `<tr><td colspan="${columnas.length + 1}" class="vc-vacio">Sin registros aún.</td></tr>`
+        : docs.map(doc => `
+            <tr>
+              ${campos.map(c => `<td>${doc[c] ?? '—'}</td>`).join('')}
+              <td>
+                <button class="vc-editar" data-id="${doc._id}">✏️ Editar</button>
+                <button class="vc-eliminar" data-id="${doc._id}">🗑️ Eliminar</button>
+              </td>
+            </tr>`).join('');
+
+    sec.innerHTML = `
+      <div class="vc-tabla-header">
+        <span class="vc-tabla-titulo">${window.TABLA_TITULO || 'Registros'}</span>
+        <span class="vc-badge">${docs.length} registros</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="vc-tabla">
+          <thead><tr>${columnas.map(c=>`<th>${c}</th>`).join('')}<th>Acciones</th></tr></thead>
+          <tbody>${filas}</tbody>
+        </table>
+      </div>`;
+
+    // Botones editar
+    sec.querySelectorAll('.vc-editar').forEach(btn => {
+        btn.onclick = async () => {
+            const ok = await pedirPassword('editar registro');
+            if (!ok) return;
+            const doc = docs.find(d => d._id === btn.dataset.id);
+            abrirEdicion(doc, campos, endpoint, onRefresh);
+        };
+    });
+
+    // Botones eliminar
+    sec.querySelectorAll('.vc-eliminar').forEach(btn => {
+        btn.onclick = async () => {
+            const ok = await pedirPassword('eliminar registro');
+            if (!ok) return;
+            const r = await fetch(`${API_BASE}${endpoint}/${btn.dataset.id}`, { method: 'DELETE' });
+            const json = await r.json();
+            if (json.error) { mostrarToast('❌ ' + json.error, 'error'); return; }
+            mostrarToast('✅ Eliminado correctamente');
+            onRefresh();
+        };
+    });
+}
+
+// ── Cargar registros ──────────────────────────────────────────
+async function cargarTabla(endpoint, campos, columnas) {
+    try {
+        const r = await fetch(API_BASE + endpoint);
+        const docs = await r.json();
+        renderTabla(docs, campos, columnas, endpoint, () => cargarTabla(endpoint, campos, columnas));
+    } catch (e) {
+        mostrarToast('⚠️ No se pudo conectar al servidor', 'error');
+    }
+}
+
+// ── Init formulario ───────────────────────────────────────────
+function initForm(cfg) {
+    window.TABLA_TITULO = cfg.titulo;
+    inyectarEstilos();
+    cargarTabla(cfg.endpoint, cfg.campos, cfg.columnas);
+
+    const form = document.getElementById(cfg.formId);
+    if (!form) return;
+
+    form.addEventListener('submit', async e => {
+        e.preventDefault();
+        const datos = {};
+        cfg.campos.forEach(c => {
+            const el = form.querySelector(`[name="${c}"]`);
+            if (el) datos[c] = el.value;
+        });
+
+        const btn = form.querySelector('button[type="submit"]');
+        const textoOriginal = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Guardando...';
+
+        try {
+            const r = await fetch(API_BASE + cfg.endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            });
+            const json = await r.json();
+            if (json.error) throw new Error(json.error);
+            mostrarToast('✅ ' + (json.mensaje || 'Guardado correctamente'));
+            form.reset();
+            cargarTabla(cfg.endpoint, cfg.campos, cfg.columnas);
+        } catch (err) {
+            mostrarToast('❌ Error: ' + err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = textoOriginal;
+        }
+    });
+}
+
+// ── Estilos ───────────────────────────────────────────────────
+function inyectarEstilos() {
+    if (document.getElementById('vc-css')) return;
+    const s = document.createElement('style');
+    s.id = 'vc-css';
+    s.textContent = `
+/* Toast */
+#vc-toast { position:fixed;bottom:24px;right:24px;z-index:9999;padding:13px 20px;border-radius:8px;font-family:Poppins,sans-serif;font-size:14px;color:#fff;box-shadow:0 4px 18px rgba(0,0,0,.25);opacity:0;transform:translateY(20px);transition:.3s;pointer-events:none;max-width:300px; }
+#vc-toast.show { opacity:1;transform:translateY(0); }
+#vc-toast.vc-ok    { background:#27ae60; }
+#vc-toast.vc-error { background:#c0392b; }
+
+/* Modal password */
+#vc-pw-overlay,#vc-edit-overlay { display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;align-items:center;justify-content:center; }
+.vc-pw-box,.vc-edit-box { background:#fff;border-radius:10px;padding:28px 24px;width:min(360px,90vw);font-family:Poppins,sans-serif;box-shadow:0 10px 40px rgba(0,0,0,.3);animation:vcpop .25s ease; }
+@keyframes vcpop{from{transform:scale(.88);opacity:0}to{transform:scale(1);opacity:1}}
+.vc-pw-box h3,.vc-edit-box h3 { margin:0 0 10px;color:#E67E22;font-size:1.1rem; }
+.vc-pw-box p,.vc-edit-box label { font-size:13px;color:#555;margin:0 0 8px;display:block; }
+.vc-pw-box input,.vc-edit-box input { width:100%;padding:10px 12px;border:2px solid #ddd;border-radius:6px;font-family:Poppins,sans-serif;font-size:14px;margin-bottom:6px;box-sizing:border-box; }
+.vc-pw-box input:focus,.vc-edit-box input:focus { border-color:#E67E22;outline:none; }
+.vc-pw-box button,.vc-edit-box button { flex:1;padding:10px;border:none;border-radius:6px;font-family:Poppins,sans-serif;font-weight:700;cursor:pointer;font-size:14px; }
+#vc-pw-ok,#vc-edit-save { background:#E67E22;color:#fff; }
+#vc-pw-ok:hover,#vc-edit-save:hover { background:#D35400; }
+#vc-pw-cancel,#vc-edit-cancel { background:#ECF0F1;color:#333; }
+#vc-pw-cancel:hover,#vc-edit-cancel:hover { background:#BDC3C7; }
+
+/* Tabla */
+#vc-tabla-sec { width:min(860px,95vw);margin:28px auto 0;background:#fff;border-radius:10px;border:2px solid #E0D5C8;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.07); }
+.vc-tabla-header { display:flex;align-items:center;justify-content:space-between;padding:16px 22px;background:#FDF3E6;border-bottom:2px solid #E0D5C8; }
+.vc-tabla-titulo { font-family:Poppins,sans-serif;font-weight:700;color:#444;font-size:.95rem; }
+.vc-badge { background:#E67E22;color:#fff;font-size:12px;font-weight:700;padding:3px 12px;border-radius:20px;font-family:Poppins,sans-serif; }
+.vc-tabla { width:100%;border-collapse:collapse;font-family:Poppins,sans-serif;font-size:13px; }
+.vc-tabla thead { background:#FDF3E6; }
+.vc-tabla th { padding:10px 14px;text-align:left;font-weight:700;color:#E67E22;font-size:11px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap; }
+.vc-tabla td { padding:10px 14px;border-top:1px solid #F0EAE0;color:#333; }
+.vc-tabla tbody tr:hover { background:#FDEBD0; }
+.vc-vacio { text-align:center;color:#aaa;font-style:italic;padding:28px!important; }
+.vc-editar,.vc-eliminar { border:none;padding:5px 10px;border-radius:5px;font-family:Poppins,sans-serif;font-size:12px;font-weight:600;cursor:pointer;margin-right:4px; }
+.vc-editar { background:#EBF5FB;color:#2980B9; }
+.vc-editar:hover { background:#2980B9;color:#fff; }
+.vc-eliminar { background:#FDEDEC;color:#C0392B; }
+.vc-eliminar:hover { background:#C0392B;color:#fff; }
+`;
+    document.head.appendChild(s);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof VC_CONFIG !== 'undefined') initForm(VC_CONFIG);
+});
+</script>
 </body>
-<style>
-    * { box-sizing: border-box; }
-    body {
-        font-family: "Poppins", sans-serif;
-        background-color: #FDEBD0;
-        margin: 0; padding: 0;
-        display: flex; flex-direction: column; align-items: center; min-height: 100vh; color: #2C3E50;
-    }
-    header {
-        background-color: #FFFFFF; width: 100%; padding: 25px 0; text-align: center; border-bottom: 3px solid #B0B0B0;
-    }
-    h1 { color: #444444; margin: 15px 0 5px 0; font-size: 1.8rem; font-style: italic; }
-    header p { margin: 5px 0 0 0; font-size: 14px; color: #666666; }
-    main { display: flex; flex-direction: column; align-items: center; width: 100%; padding: 40px 20px; flex: 1; }
-    .form-container { max-width: 500px; width: 100%; background: white; padding: 35px; border-radius: 4px; border: 3px solid #B0B0B0; }
-    .form-group { margin-bottom: 22px; }
-    label { display: block; margin-bottom: 8px; font-weight: 600; color: #E67E22; font-size: 14px; }
-    input[type="text"] {
-        width: 100%; padding: 12px; border: 2px solid #B0B0B0; border-radius: 4px; font-family: "Poppins", sans-serif; font-size: 14px; background-color: #FAFAFA; color: #333;
-    }
-    input:focus { outline: none; border-color: #E67E22; background-color: #fff; box-shadow: 0 0 5px rgba(230, 126, 34, 0.3); }
-    .btn-submit {
-        background-color: #E67E22; color: white; border: none; padding: 14px 15px; width: 100%; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: "Poppins", sans-serif; margin-top: 10px;
-    }
-    .btn-submit:hover { background-color: #D35400; }
-    .btn-back {
-        display: inline-block; text-align: center; margin-top: 25px; color: #000000; background-color: #00FF00; font-weight: bold; padding: 10px 25px; border: 3px solid #000000; text-decoration: none; font-size: 14px;
-    }
-    .btn-back:hover { background-color: #00CC00; }
-    footer { width: 100%; background-color: #FFFFFF; padding: 15px 0; text-align: center; font-size: 12px; color: #333333; border-top: 3px solid #B0B0B0; }
-    footer p { margin: 4px 0; }
-</style>
 </html>
